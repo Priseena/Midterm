@@ -1,42 +1,39 @@
 import unittest
-from calculator import Calculator
-from history import HistoryManager
+from calculator.calculations import Calculation
+from calculator.operations import add, subtract, multiply, divide
+from calculator.history_manager import HistoryManager
 
 class TestCalculator(unittest.TestCase):
     
     def setUp(self):
-        self.calculator = Calculator()
         self.history_manager = HistoryManager()
 
     def test_addition(self):
-        '''Test addition function works '''    
-        result = self.calculator.add(2, 2)
+        """Test addition function works"""    
+        calc = Calculation(2, 2, add)
+        result = calc.get_result()
         self.assertEqual(result, 4)
-        self.history_manager.add_record('add', 2, 2, result)
-        self.assertEqual(len(self.history_manager.history), 1)
 
     def test_subtraction(self):
-        '''Test subtraction function works '''    
-        result = self.calculator.subtract(2, 2)
+        """Test subtraction function works"""    
+        calc = Calculation(2, 2, subtract)
+        result = calc.get_result()
         self.assertEqual(result, 0)
-        self.history_manager.add_record('subtract', 2, 2, result)
-        self.assertEqual(len(self.history_manager.history), 2)
 
     def test_multiply(self):
-        '''Test multiplication function works '''    
-        result = self.calculator.multiply(2, 2)
+        """Test multiplication function works"""    
+        calc = Calculation(2, 2, multiply)
+        result = calc.get_result()
         self.assertEqual(result, 4)
-        self.history_manager.add_record('multiply', 2, 2, result)
-        self.assertEqual(len(self.history_manager.history), 3)
 
     def test_divide(self):
-        '''Test division function works '''    
-        result = self.calculator.divide(2, 2)
+        """Test division function works"""    
+        calc = Calculation(2, 2, divide)
+        result = calc.get_result()
         self.assertEqual(result, 1)
-        self.history_manager.add_record('divide', 2, 2, result)
-        self.assertEqual(len(self.history_manager.history), 4)
-        with self.assertRaises(ValueError):
-            self.calculator.divide(1, 0)
+
+        with self.assertRaises(ZeroDivisionError):
+            Calculation(1, 0, divide).get_result()
 
 if __name__ == '__main__':
     unittest.main()

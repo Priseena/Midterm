@@ -2,79 +2,77 @@ import os
 import pkgutil
 import importlib
 import sys
-from app.commands import CommandHandler, Command
-from dotenv import load_dotenv
 import logging
 import logging.config
+from dotenv import load_dotenv
+from app.commands import CommandHandler, Command
 
 class App:
     def __init__(self):
-        os.makedirs('logs', exist_ok=True)
+        """Initialize the application, configure logging, and load plugins."""
+        os.makedirs("logs", exist_ok=True)
         self.configure_logging()
         load_dotenv()
         self.settings = self.load_environment_variables()
-        self.settings.setdefault('ENVIRONMENT', 'PRODUCTION')
+        self.settings.setdefault("ENVIRONMENT", "PRODUCTION")
+
         self.command_handler = CommandHandler()
+        self.load_plugins()  # Automatically load plugins
 
     def configure_logging(self):
-        logging_conf_path = 'logging.conf'
+        """Configure logging for the application."""
+        logging_conf_path = "logging.conf"
         if os.path.exists(logging_conf_path):
             logging.config.fileConfig(logging_conf_path, disable_existing_loggers=False)
         else:
-            logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+            logging.basicConfig(
+                level=logging.INFO,
+                format="%(asctime)s - %(levelname)s - %(message)s",
+            )
         logging.info("Logging configured.")
 
     def load_environment_variables(self):
+        """Load environment variables into settings."""
         settings = {key: value for key, value in os.environ.items()}
         logging.info("Environment variables loaded.")
         return settings
 
-    def get_environment_variable(self, env_var: str = 'ENVIRONMENT'):
-        return self.settings.get(env_var, None)
+    def get_environment_variable(self, key: str, default=None):
+        """Retrieve an environment variable, returning a default if not found."""
+        return self.settings.get(key, default)
 
     def load_plugins(self):
-        plugins_package = 'app.plugins'
-        plugins_path = plugins_package.replace('.', '/')
+        """Dynamically load all command plugins from the `app/plugins/` directory."""
+        plugins_path = os.path.join(os.path.dirname(__file__), "plugins")
         if not os.path.exists(plugins_path):
-            logging.warning(f"Plugins directory '{plugins_path}' not found.")
+            logging.warning("Plugins directory not found.")
             return
-        for _, plugin_name, is_pkg in pkgutil.iter_modules([plugins_path]):
-            if is_pkg:
-                try:
-                    plugin_module = importlib.import_module(f'{plugins_package}.{plugin_name}')
-                    self.register_plugin_commands(plugin_module, plugin_name)
-                except ImportError as e:
-                    logging.error(f"Error importing plugin {plugin_name}: {e}")
 
-    def register_plugin_commands(self, plugin_module, plugin_name):
-        for item_name in dir(plugin_module):
-            item = getattr(plugin_module, item_name)
-            if isinstance(item, type) and issubclass(item, Command) and item is not Command:
-                # Command names are now explicitly set to the plugin's folder name
-                self.command_handler.register_command(plugin_name, item())
-                logging.info(f"Command '{plugin_name}' from plugin '{plugin_name}' registered.")
+        logging.info("Loading plugins...")
+        for _, module_name, _ in pkgutil.iter_modules([plugins_path]):
+            module_path = f"app.plugins.{module_name}"
+            try:
+                module = importlib.import_module(module_path)
+                if hasattr(module, "COMMAND_NAME") and hasattr(module, "COMMAND_CLASS"):
+                    command_name = module.COMMAND_NAME
+                    command_class = module.COMMAND_CLASS
+                    self.command_handler.register_command(command_name, command_class())
+                    logging.info(f"Registered command: {command_name}")
+            except Exception as e:
+                logging.error(f"Failed to load plugin {module_name}: {e}")
 
     def start(self):
-        self.load_plugins()
-        logging.info("Application started. Type 'exit' to exit.")
-        try:
-            while True:
-                cmd_input = input(">>> ").strip()
-                if cmd_input.lower() == 'exit':
-                    logging.info("Application exit.")
-                    sys.exit(0)  # Use sys.exit(0) for a clean exit, indicating success.
-                try:
-                    self.command_handler.execute_command(cmd_input)
-                except KeyError:  # Assuming execute_command raises KeyError for unknown commands
-                    logging.error(f"Unknown command: {cmd_input}")
-                    sys.exit(1)  # Use a non-zero exit code to indicate failure or incorrect command.
-        except KeyboardInterrupt:
-            logging.info("Application interrupted and exiting gracefully.")
-            sys.exit(0)  # Assuming a KeyboardInterrupt should also result in a clean exit.
-        finally:
-            logging.info("Application shutdown.")
-
-
-if __name__ == "__main__":
-    app = App()
-    app.start()
+        """Start the REPL loop to accept user commands."""
+        logging.info("Starting REPL...")
+        while True:
+            try:
+                user_input = input(">>> ").strip().lower()
+                if user_input == "exit":
+                    logging.info("Exiting application.")
+                    exit(0)
+                elif user_input in self.command_handler.commands:
+                    self.command_handler.execute_command(user_input)
+                else:
+                    print(f"No such command: {user_input}")
+            except Exception as e:
+                logging.error(f"Error in REPL: {e}")
