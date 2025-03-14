@@ -1,38 +1,59 @@
 import logging
 import os
-from app.plugins.plugins import CommandHandler
+from app.commands import CommandHandler, CommandFactory
 from calculator import Calculator
 from calculator.history_manager import HistoryManager
-from app.commands import CsvCommand, DataCommand, GreetCommand
 
-# Configure logging
-logging.basicConfig(level=logging.DEBUG, filename='app.log', filemode='w',
-                    format='%(name)s - %(levelname)s - %(message)s')
+# Singleton Logger for Logging Configuration
+class SingletonLogger:
+    _instance = None
 
-logger = logging.getLogger(__name__)
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(SingletonLogger, cls).__new__(cls)
+            logging.basicConfig(level=logging.DEBUG, filename='app.log', filemode='w',
+                                format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            cls._instance.logger = logging.getLogger("SingletonLogger")
+        return cls._instance
+
+logger = SingletonLogger().logger
 
 def main():
+    logger.info("Starting the application...")
+
     # Initialize CommandHandler
     command_handler = CommandHandler()
 
-    # Register additional commands
-    logger.info("Registering commands...")
-    command_handler.register_command("data", DataCommand())
-    command_handler.register_command("greet", GreetCommand())
+    # Register commands using the Factory Pattern
+    logger.info("Registering commands using the Command Factory...")
+    command_handler.register_command("csv", CommandFactory.create_command("csv"))
+    command_handler.register_command("data", CommandFactory.create_command("data"))
+    command_handler.register_command("greet", CommandFactory.create_command("greet"))
+    command_handler.register_command("add_calc", CommandFactory.create_command("calculator_add"))
+    command_handler.register_command("sub_calc", CommandFactory.create_command("calculator_sub"))
     logger.info("Commands registered successfully.")
 
-    # Run CsvCommand to handle CSV data
-    logger.info("Running CsvCommand to handle CSV data.")
-    csv_command = CsvCommand()
-    csv_command.execute()
+    # Execute commands
+    logger.info("Executing 'csv' command...")
+    command_handler.execute_command("csv")
 
-    # Create instances of Calculator and HistoryManager
+    logger.info("Executing 'data' command...")
+    command_handler.execute_command("data")
+
+    logger.info("Executing 'greet' command...")
+    command_handler.execute_command("greet")
+
+    # Test calculator commands using Strategy Pattern
+    logger.info("Executing calculator commands with strategies...")
+    command_handler.execute_command("add_calc")
+    command_handler.execute_command("sub_calc")
+
+    # Calculator and HistoryManager for direct calculations
     calculator = Calculator()
     history_manager = HistoryManager()
 
-    # Test addition, subtraction, multiplication, and division
-    logger.info("Starting calculations.")
-
+    # Additional Calculations
+    logger.info("Performing additional calculations...")
     # Addition
     result_add = calculator.add(3, 5)
     history_manager.add_record('add', 3, 5, result_add)
@@ -51,7 +72,7 @@ def main():
     print(f'Multiplication Result: {result_multiply}')
     logger.info(f"Multiplication performed: 6 * 7 = {result_multiply}")
 
-    # Division
+    # Division with exception handling
     try:
         result_divide = calculator.divide(20, 5)
         history_manager.add_record('divide', 20, 5, result_divide)
@@ -62,25 +83,16 @@ def main():
         logger.error(f"Error during division: {e}")
 
     # View and print history
+    logger.info("Printing calculation history...")
     print("Calculation History:")
     print(history_manager.history)
-
-    # Check if "data" command exists in the registered commands
-    logger.info("Checking and executing 'data' command...")
-    if "data" in command_handler.commands:
-        data_command = command_handler.commands["data"]
-        data_command.execute()
-
-    # Check if "greet" command exists and execute it
-    logger.info("Checking and executing 'greet' command...")
-    if "greet" in command_handler.commands:
-        greet_command = command_handler.commands["greet"]
-        greet_command.execute()
 
     # Print log messages to the console
     with open('app.log', 'r') as log_file:
         print("\nLog Messages:")
         print(log_file.read())
+
+    logger.info("Application execution complete.")
 
 if __name__ == '__main__':
     main()

@@ -1,21 +1,63 @@
-__main__ - INFO - Registering commands...
-app.commands - INFO - Registered command: data
-app.commands - INFO - Registered command: greet
-__main__ - INFO - Commands registered successfully.
-__main__ - INFO - Running CsvCommand to handle CSV data.
-app.commands - INFO - Executing CsvCommand: Handling CSV data...
-app.commands - INFO - CsvCommand executed successfully.
-__main__ - INFO - Starting calculations.
-__main__ - INFO - Addition performed: 3 + 5 = 8
-__main__ - INFO - Subtraction performed: 10 - 4 = 6
-__main__ - INFO - Multiplication performed: 6 * 7 = 42
-__main__ - INFO - Division performed: 20 / 5 = 4.0
-__main__ - INFO - Checking and executing 'data' command...
-app.commands - INFO - Executing DataCommand: Processing structured data...
-app.commands - INFO - List: ['apple', 'banana', 'cherry']
-app.commands - INFO - Tuple: (1, 2, 3, 4)
-app.commands - INFO - Set: {1, 2, 3, 4}
-app.commands - INFO - Dictionary: {'CA': 'California', 'TX': 'Texas'}
-app.commands - INFO - DataCommand executed successfully.
-__main__ - INFO - Checking and executing 'greet' command...
-app.commands - INFO - Executing 'greet' command.
+2025-03-14 16:42:05,029 - SingletonLogger - INFO - Starting the application...
+2025-03-14 16:42:05,029 - SingletonLogger - INFO - Registering commands using the Command Factory...
+2025-03-14 16:42:05,029 - SingletonLogger - INFO - Registered command: csv
+2025-03-14 16:42:05,029 - SingletonLogger - INFO - Registered command: data
+2025-03-14 16:42:05,029 - SingletonLogger - INFO - Registered command: greet
+2025-03-14 16:42:05,029 - SingletonLogger - INFO - Registered command: add_calc
+2025-03-14 16:42:05,030 - SingletonLogger - INFO - Registered command: sub_calc
+2025-03-14 16:42:05,030 - SingletonLogger - INFO - Commands registered successfully.
+2025-03-14 16:42:05,030 - SingletonLogger - INFO - Executing 'csv' command...
+2025-03-14 16:42:05,030 - SingletonLogger - INFO - Executing command: csv
+2025-03-14 16:42:05,030 - SingletonLogger - INFO - Executing CsvCommand: Handling CSV data...
+2025-03-14 16:42:05,031 - SingletonLogger - INFO - Original DataFrame:
+2025-03-14 16:42:05,034 - SingletonLogger - INFO - 
+   A  B
+0  1  4
+1  2  5
+2  3  6
+2025-03-14 16:42:05,036 - SingletonLogger - INFO - Filtered DataFrame (A > 1):
+2025-03-14 16:42:05,045 - SingletonLogger - INFO - 
+   A  B
+1  2  5
+2  3  6
+2025-03-14 16:42:05,050 - SingletonLogger - INFO - Summary Statistics:
+2025-03-14 16:42:05,052 - SingletonLogger - INFO - 
+         A    B
+count  3.0  3.0
+mean   2.0  5.0
+std    1.0  1.0
+min    1.0  4.0
+25%    1.5  4.5
+50%    2.0  5.0
+75%    2.5  5.5
+max    3.0  6.0
+2025-03-14 16:42:05,052 - SingletonLogger - INFO - CsvCommand executed successfully.
+2025-03-14 16:42:05,052 - SingletonLogger - INFO - Command csv executed successfully.
+2025-03-14 16:42:05,052 - SingletonLogger - INFO - Executing 'data' command...
+2025-03-14 16:42:05,052 - SingletonLogger - INFO - Executing command: data
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - Executing DataCommand: Processing structured data...
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - List: ['apple', 'banana', 'cherry']
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - Tuple: (1, 2, 3, 4)
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - Set: {1, 2, 3, 4}
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - Dictionary: {'CA': 'California', 'TX': 'Texas'}
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - DataCommand executed successfully.
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - Command data executed successfully.
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - Executing 'greet' command...
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - Executing command: greet
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - Executing 'greet' command.
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - GreetCommand executed successfully.
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - Command greet executed successfully.
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - Executing calculator commands with strategies...
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - Executing command: add_calc
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - Executing Calculator command: Strategy-based operation.
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - Command add_calc executed successfully.
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - Executing command: sub_calc
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - Executing Calculator command: Strategy-based operation.
+2025-03-14 16:42:05,053 - SingletonLogger - INFO - Command sub_calc executed successfully.
+2025-03-14 16:42:05,054 - SingletonLogger - INFO - Performing additional calculations...
+2025-03-14 16:42:05,054 - SingletonLogger - INFO - Addition performed: 3 + 5 = 8
+2025-03-14 16:42:05,055 - SingletonLogger - INFO - Subtraction performed: 10 - 4 = 6
+2025-03-14 16:42:05,055 - SingletonLogger - INFO - Multiplication performed: 6 * 7 = 42
+2025-03-14 16:42:05,055 - SingletonLogger - INFO - Division performed: 20 / 5 = 4.0
+2025-03-14 16:42:05,056 - SingletonLogger - INFO - Printing calculation history...
+2025-03-14 16:42:05,058 - SingletonLogger - INFO - Application execution complete.
