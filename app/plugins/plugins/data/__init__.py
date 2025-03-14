@@ -76,3 +76,7 @@ class DataCommand(Command):
                 property_info = f"    {property_name.capitalize()}: {property_value}"
                 print(property_info)
                 logging.info(property_info)
+
+# Plugin registration
+COMMAND_NAME = "data"
+COMMAND_CLASS = DataCommand
