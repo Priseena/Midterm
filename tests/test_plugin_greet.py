@@ -15,4 +15,4 @@ def test_app_greet_command(capfd, monkeypatch):
 
     # Capture the output from the 'greet' command
     out, _ = capfd.readouterr()
-   
+    assert "Hello, World!" in out, "Expected 'Hello, World!' but got different output"

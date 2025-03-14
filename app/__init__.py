@@ -5,7 +5,7 @@ import sys
 import logging
 import logging.config
 from dotenv import load_dotenv
-from app.commands import CommandHandler, Command
+from app.commands import CommandHandler, CsvCommand, GreetCommand, DataCommand
 
 class App:
     def __init__(self):
@@ -18,16 +18,23 @@ class App:
 
         self.command_handler = CommandHandler()
         self.load_plugins()  # Automatically load plugins
+        self.register_builtin_commands()  # Manually register missing commands
 
     def configure_logging(self):
         """Configure logging for the application."""
         logging_conf_path = "logging.conf"
+        log_filename = "logs/app.log"
+
         if os.path.exists(logging_conf_path):
             logging.config.fileConfig(logging_conf_path, disable_existing_loggers=False)
         else:
             logging.basicConfig(
                 level=logging.INFO,
                 format="%(asctime)s - %(levelname)s - %(message)s",
+                handlers=[
+                    logging.FileHandler(log_filename),
+                    logging.StreamHandler(sys.stdout)
+                ]
             )
         logging.info("Logging configured.")
 
@@ -60,6 +67,13 @@ class App:
                     logging.info(f"Registered command: {command_name}")
             except Exception as e:
                 logging.error(f"Failed to load plugin {module_name}: {e}")
+
+    def register_builtin_commands(self):
+        """Manually register core commands in case they are not plugins."""
+        self.command_handler.register_command("csv", CsvCommand())
+        self.command_handler.register_command("greet", GreetCommand())
+        self.command_handler.register_command("data", DataCommand())
+        logging.info("Builtin commands registered: csv, greet, data")
 
     def start(self):
         """Start the REPL loop to accept user commands."""
