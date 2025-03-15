@@ -1,7 +1,7 @@
 """
 This module contains the Calculation class for basic arithmetic operations.
 """
-from calculator.operations import add, subtract, multiply, divide
+from app.calculator.calculator.operations import add, subtract, multiply, divide
 
 class Calculation:
     """Class for performing basic arithmetic operations."""

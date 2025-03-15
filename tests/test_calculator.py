@@ -1,7 +1,7 @@
 import unittest
-from calculator.calculations import Calculation
-from calculator.operations import add, subtract, multiply, divide
-from calculator.history_manager import HistoryManager
+from app.calculator.calculator.calculations import Calculation
+from app.calculator.calculator.operations import add, subtract, multiply, divide
+from app.calculator.calculator.history_manager import HistoryManager
 
 class TestCalculator(unittest.TestCase):
     

@@ -6,7 +6,33 @@ import logging
 import logging.config
 from dotenv import load_dotenv
 from app.commands import CommandHandler, CsvCommand, GreetCommand, DataCommand
+from app.calculator.calculator.operations import add, subtract, multiply, divide
 
+class CalculatorCommand:
+    def execute(self, operation_data):
+        try:
+            # Split the input into operation and operands
+            operation, num1, num2 = operation_data.split()
+            num1, num2 = float(num1), float(num2)
+
+            # Perform the arithmetic operation
+            if operation == "add":
+                result = num1 + num2
+            elif operation == "subtract":
+                result = num1 - num2
+            elif operation == "multiply":
+                result = num1 * num2
+            elif operation == "divide":
+                if num2 == 0:
+                    return "Error: Division by zero is not allowed."
+                result = num1 / num2
+            else:
+                return f"No such operation: {operation}"
+
+            return f"Result: {result}"
+
+        except ValueError:
+            return "Invalid format. Use commands like 'add 2 2'."      
 class App:
     def __init__(self):
         """Initialize the application, configure logging, and load plugins."""
@@ -73,7 +99,11 @@ class App:
         self.command_handler.register_command("csv", CsvCommand())
         self.command_handler.register_command("greet", GreetCommand())
         self.command_handler.register_command("data", DataCommand())
-        logging.info("Builtin commands registered: csv, greet, data")
+        self.command_handler.register_command("add", CalculatorCommand())
+        self.command_handler.register_command("subtract", CalculatorCommand())
+        self.command_handler.register_command("multiply", CalculatorCommand())
+        self.command_handler.register_command("divide", CalculatorCommand())
+        logging.info("Builtin commands registered: csv, greet, data,add, subtract, multiply, divide")
 
     def start(self):
         """Start the REPL loop to accept user commands."""

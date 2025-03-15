@@ -1,6 +1,6 @@
 import unittest
 import os
-from calculator.history_manager import HistoryManager
+from app.calculator.calculator.history_manager import HistoryManager
 
 class TestHistoryManager(unittest.TestCase):
     

@@ -2,8 +2,8 @@
 This module contains unit tests for the calculations functions.
 """
 
-from calculator.calculations import Calculation
-from calculator.operations import add, subtract, multiply, divide
+from app.calculator.calculator.calculations import Calculation
+from app.calculator.calculator.operations import add, subtract, multiply, divide
 
 class Calculator:
     """

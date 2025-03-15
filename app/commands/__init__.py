@@ -19,32 +19,28 @@ logger = SingletonLogger().logger
 # Define the base abstract class Command
 class Command(ABC):
     @abstractmethod
-    def execute(self):
+    def execute(self, operation_data=None):
         pass
 
-# CsvCommand - Handling CSV-related tasks (using Facade for Pandas operations)
+# CsvCommand - Handling CSV-related tasks
 class CsvCommand(Command):
-    def execute(self):
+    def execute(self, operation_data=None):
         logger.info("Executing CsvCommand: Handling CSV data...")
-        # Simulate a DataFrame operation using a Facade-like structure
         df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
-        logger.info("Original DataFrame:")
-        logger.info(f"\n{df}")
+        logger.info(f"Original DataFrame:\n{df}")
 
         filtered_df = df[df['A'] > 1]
-        logger.info("Filtered DataFrame (A > 1):")
-        logger.info(f"\n{filtered_df}")
+        logger.info(f"Filtered DataFrame (A > 1):\n{filtered_df}")
 
         summary = df.describe()
-        logger.info("Summary Statistics:")
-        logger.info(f"\n{summary}")
+        logger.info(f"Summary Statistics:\n{summary}")
 
         print("CsvCommand executed: Check logs for details.")
         logger.info("CsvCommand executed successfully.")
 
-# DataCommand - Handling dictionary, set, list, and tuple operations
+# DataCommand - Handling structured data
 class DataCommand(Command):
-    def execute(self):
+    def execute(self, operation_data=None):
         logger.info("Executing DataCommand: Processing structured data...")
         my_list = ['apple', 'banana', 'cherry']
         logger.info(f'List: {my_list}')
@@ -59,12 +55,38 @@ class DataCommand(Command):
 
 # GreetCommand - Simple greeting output
 class GreetCommand(Command):
-    def execute(self):
+    def execute(self, operation_data=None):
         logger.info("Executing 'greet' command.")
         print("Hello, World!")
         logger.info("GreetCommand executed successfully.")
 
-# Calculator strategies for Strategy Pattern
+# CalculatorCommand - Handling arithmetic operations
+class CalculatorCommand(Command):
+    def execute(self, operation_data):
+        try:
+            operation, num1, num2 = operation_data.split()
+            num1, num2 = float(num1), float(num2)
+
+            if operation == "add":
+                result = num1 + num2
+            elif operation == "subtract":
+                result = num1 - num2
+            elif operation == "multiply":
+                result = num1 * num2
+            elif operation == "divide":
+                if num2 == 0:
+                    return "Error: Division by zero is not allowed."
+                result = num1 / num2
+            else:
+                return f"No such operation: {operation}"
+
+            logger.info(f"Performed {operation}: {num1} and {num2} = {result}")
+            return f"Result: {result}"
+
+        except ValueError:
+            return "Invalid format. Use commands like 'add 2 2'."
+
+# Calculator class for Strategy Pattern
 class AdditionStrategy:
     def execute(self, a, b):
         return a + b
@@ -94,6 +116,14 @@ class CommandFactory:
             return DataCommand()
         elif command_type == "greet":
             return GreetCommand()
+        elif command_type == "add":
+            return CalculatorCommand()
+        elif command_type == "subtract":
+            return CalculatorCommand()
+        elif command_type == "multiply":
+            return CalculatorCommand()
+        elif command_type == "divide":
+            return CalculatorCommand()
         elif command_type == "calculator_add":
             return Calculator(AdditionStrategy())
         elif command_type == "calculator_sub":
@@ -110,11 +140,15 @@ class CommandHandler:
         self.commands[command_name] = command
         logger.info(f"Registered command: {command_name}")
 
-    def execute_command(self, command_name: str):
+    def execute_command(self, operation_data: str):
+        command_name = operation_data.split()[0]  # Extract the command name (e.g., 'add')
         if command_name in self.commands:
             logger.info(f"Executing command: {command_name}")
             try:
-                self.commands[command_name].execute()
+                # Pass the full input (operation_data) to the command's execute method
+                result = self.commands[command_name].execute(operation_data)
+                if result:
+                    print(result)
                 logger.info(f"Command {command_name} executed successfully.")
             except Exception as e:
                 logger.error(f"Error executing {command_name}: {e}")
